@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Your Name — Engineering Portfolio</title>
+  <desc id="desc">Abstract grid with placeholder portfolio title.</desc>
+  <rect width="1200" height="630" fill="#080d11"/>
+  <g stroke="#2b3740" opacity=".6"><path d="M0 105h1200M0 210h1200M0 315h1200M0 420h1200M0 525h1200M100 0v630M300 0v630M500 0v630M700 0v630M900 0v630M1100 0v630"/></g>
+  <circle cx="1000" cy="120" r="190" fill="#4bd2c0" opacity=".08"/>
+  <text x="100" y="230" fill="#4bd2c0" font-family="monospace" font-size="24" letter-spacing="5">ENGINEERING PORTFOLIO</text>
+  <text x="100" y="340" fill="#e8eff2" font-family="system-ui, sans-serif" font-size="78" font-weight="700">Your Name</text>
+  <text x="100" y="410" fill="#95a4ae" font-family="system-ui, sans-serif" font-size="32">Software · AI · Security · Systems</text>
+</svg>

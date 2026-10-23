@@ -1,0 +1,41 @@
+---
+title: Designing for Failure Before Production
+description: A sample article about making failure modes concrete while a system is still inexpensive to change.
+date: 2026-02-12
+tags: [Reliability, Architecture, Operations]
+featured: true
+placeholder: true
+---
+
+> **Sample article:** This demonstrates the publishing format and editorial tone. Replace it with original, fact-checked writing.
+
+Reliable systems are rarely the result of one clever mechanism. They emerge from many small decisions that make bad states visible, bounded, and recoverable.
+
+## Begin with a failure inventory
+
+Before choosing resilience patterns, write down what can fail. Group the list by dependency, state transition, and operator action. For each item, ask:
+
+1. How would we detect it?
+2. What contains the impact?
+3. What restores service?
+4. What evidence remains afterward?
+
+This turns a vague reliability goal into a set of engineering decisions.
+
+## Prefer bounded behavior
+
+Timeouts, queues, retries, and circuit breakers are useful only when their limits compose. An unbounded retry policy can turn one dependency failure into system-wide congestion. A queue without an age policy can preserve work that is no longer valuable.
+
+```ts
+const policy = {
+  timeoutMs: 2_000,
+  attempts: 3,
+  retryOn: ["transient"],
+};
+```
+
+The actual values depend on the system. The important part is that the policy is explicit, observable, and tested under failure.
+
+## Design the recovery path
+
+A rollback that has never been exercised is a hypothesis. Test recovery with the same seriousness as delivery, and give operators concise signals that connect symptoms to action.

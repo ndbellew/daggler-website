@@ -1,0 +1,32 @@
+{
+	admin off
+}
+
+# This listener is container-internal and remains HTTP in every environment.
+http://127.0.0.1:2019 {
+	respond /healthz "ok" 200
+}
+
+{$SITE_ADDRESS:http://} {
+	encode zstd gzip
+
+	# Reserved for the future backend. The upstream need not exist until /api is used.
+	handle /api/* {
+		reverse_proxy {$BACKEND_UPSTREAM:backend:3000}
+	}
+
+	@static_assets path_regexp static_assets \.(css|js|svg|png|jpg|jpeg|gif|webp|ico|woff|woff2)$
+	header @static_assets Cache-Control "public, max-age=604800, immutable"
+
+	handle {
+		root * {$SITE_ROOT:/srv}
+		try_files {path} {path}/index.html {path}.html
+		file_server
+	}
+
+	handle_errors {
+		root * {$SITE_ROOT:/srv}
+		rewrite * /404.html
+		file_server
+	}
+}

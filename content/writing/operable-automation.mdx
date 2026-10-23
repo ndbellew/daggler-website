@@ -1,0 +1,24 @@
+---
+title: Automation That Operators Can Trust
+description: A sample note on building automation with previews, guardrails, and useful failure output.
+date: 2025-08-19
+tags: [Automation, Infrastructure, Developer Experience]
+featured: false
+placeholder: true
+---
+
+> **Sample article:** Replace with original writing and examples from work you are allowed to share.
+
+Automation earns trust when people can predict what it will do. Speed matters, but legibility, recoverability, and safe defaults matter first.
+
+## Show intent before mutation
+
+For consequential changes, render a precise preview: targets, old and new values, skipped items, and policy checks. A preview should come from the same plan that execution uses.
+
+## Make retries safe
+
+Idempotency is not just an API property. Scripts and workflows need stable identifiers, checkpoints, and behavior for partially completed runs.
+
+## Leave useful evidence
+
+Good automation reports what happened in terms an operator can act on. Logs should preserve correlation IDs, policy decisions, timing, and clear remediation without exposing secrets.

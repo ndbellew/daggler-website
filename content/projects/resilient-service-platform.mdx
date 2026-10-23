@@ -1,0 +1,40 @@
+---
+title: Resilient Service Platform
+description: A sample case-study structure for explaining platform reliability, delivery controls, and operational tradeoffs.
+date: 2026-01-15
+year: 20XX
+status: Case study
+tags: [Systems, Infrastructure, Reliability]
+featured: true
+placeholder: true
+---
+
+> **Sample content:** This is a writing and layout example. It does not describe a real system, employer, result, or personal contribution.
+
+## Context
+
+Use this section to explain the environment and the problem in language that a technical reader can verify. Include scale only when you have defensible numbers. Identify the users, operating constraints, and why the existing approach was insufficient.
+
+## Constraints
+
+- State the reliability or availability objective.
+- Name security, compliance, staffing, or migration boundaries.
+- Separate requirements from assumptions.
+- Avoid revealing confidential architecture or customer information.
+
+## Approach
+
+Describe the architecture at the level needed to understand your decisions. A strong case study explains alternatives considered, why one was selected, and how risk was reduced during rollout.
+
+```text
+request → policy boundary → service → durable dependency
+                    ↘ telemetry → alert → response
+```
+
+## Verification
+
+Explain testing, observability, deployment controls, rollback behavior, and how the team knew the work improved the system. Replace generic claims with measurements only when they are real and attributable.
+
+## Retrospective
+
+Close with what changed, what remained unresolved, and what you would do differently. Honest boundaries are more useful than a perfect narrative.

@@ -1,0 +1,32 @@
+name: daggler-website
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: daggler-website-frontend:local
+    environment:
+      SITE_ADDRESS: "${SITE_ADDRESS:-http://}"
+      BACKEND_UPSTREAM: "${BACKEND_UPSTREAM:-backend:3000}"
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+      - "${HTTPS_PORT:-8443}:443"
+      - "${HTTPS_PORT:-8443}:443/udp"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+
+volumes:
+  caddy_data:
+  caddy_config:

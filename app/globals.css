@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: 18 24 31;
+  --muted: 87 98 112;
+  --surface: 247 249 250;
+  --panel: 255 255 255;
+  --line: 214 220 226;
+  --accent: 0 112 120;
+  color-scheme: light;
+}
+
+.dark {
+  --ink: 232 239 242;
+  --muted: 149 164 174;
+  --surface: 8 13 17;
+  --panel: 14 21 27;
+  --line: 43 55 64;
+  --accent: 75 210 192;
+  color-scheme: dark;
+}
+
+@layer base {
+  * { @apply border-line; }
+  html { scroll-behavior: smooth; }
+  body { @apply bg-surface text-ink antialiased; }
+  ::selection { @apply bg-accent/25 text-ink; }
+  a, button { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-surface; }
+}
+
+@layer components {
+  .shell { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
+  .nav-link { @apply rounded-lg px-2 py-2 text-xs text-muted transition hover:bg-panel hover:text-ink sm:px-3 sm:text-sm; }
+  .icon-button { @apply inline-grid h-9 w-9 place-items-center rounded-lg border border-line bg-panel text-muted transition hover:border-accent/60 hover:text-accent; }
+  .button-primary { @apply inline-flex items-center justify-center gap-2 rounded-lg bg-ink px-5 py-3 text-sm font-medium text-surface transition hover:opacity-85; }
+  .button-secondary { @apply inline-flex items-center justify-center gap-2 rounded-lg border border-line bg-panel px-5 py-3 text-sm font-medium text-ink transition hover:border-accent/60 hover:text-accent; }
+  .eyebrow { @apply font-mono text-xs font-medium uppercase tracking-[0.22em] text-accent; }
+  .tag { @apply rounded-full border border-line bg-surface px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-muted; }
+  .card { @apply rounded-2xl border border-line bg-panel transition duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-glow; }
+  .section-title { @apply text-2xl font-semibold tracking-tight sm:text-3xl; }
+}
+
+.grid-field {
+  background-image: linear-gradient(rgb(var(--line) / .28) 1px, transparent 1px), linear-gradient(90deg, rgb(var(--line) / .28) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: linear-gradient(to bottom, black, transparent 92%);
+}
+
+.prose { --tw-prose-body: rgb(var(--muted)); --tw-prose-headings: rgb(var(--ink)); --tw-prose-links: rgb(var(--accent)); --tw-prose-bold: rgb(var(--ink)); --tw-prose-code: rgb(var(--ink)); --tw-prose-quotes: rgb(var(--ink)); --tw-prose-quote-borders: rgb(var(--accent)); --tw-prose-pre-bg: rgb(var(--panel)); --tw-prose-pre-code: rgb(var(--ink)); }
+.prose pre { @apply border border-line; }
+.prose :where(code):not(:where(pre *)) { @apply rounded bg-panel px-1.5 py-0.5 font-normal; }
+.prose :where(code):not(:where(pre *))::before, .prose :where(code):not(:where(pre *))::after { content: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}
+
+@media print {
+  :root, .dark { --ink: 0 0 0; --muted: 55 55 55; --surface: 255 255 255; --panel: 255 255 255; --line: 200 200 200; }
+  .no-print { display: none !important; }
+  body { font-size: 10.5pt; }
+  @page { margin: 0.55in; }
+}

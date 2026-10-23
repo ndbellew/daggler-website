@@ -1,0 +1,28 @@
+---
+title: A Practical Threat Model for Tool-Using AI
+description: A sample framework for reasoning about authorization, untrusted context, and consequence in AI systems.
+date: 2025-12-03
+tags: [AI, Security, Threat Modeling]
+featured: true
+placeholder: true
+---
+
+> **Sample article:** This is generic educational placeholder content, not a description of the author's work.
+
+When a model can call tools, the security boundary is not the chat box. It includes every source of context, every credential, every action, and every system that trusts the output.
+
+## Map data and authority separately
+
+Start with two diagrams. The data-flow view shows where instructions and retrieved content can enter. The authority view shows which actions each component may perform. The gap between those views often reveals the most important risks.
+
+## Treat context as untrusted
+
+Retrieved documents, web pages, tickets, and messages may contain adversarial instructions. They should contribute data, not silently expand authority. Enforcement belongs in deterministic policy code around the model.
+
+## Scale approval with consequence
+
+Reading public data and deleting production resources should not share an approval path. Classify tools by reversibility, scope, and data sensitivity; then require stronger confirmation as consequence increases.
+
+## Test the boundary
+
+Evaluation should include attempts to cross tenants, leak secrets, bypass approval, misuse tools, and persist instructions through indirect content. Record both model behavior and enforcement-layer behavior.
