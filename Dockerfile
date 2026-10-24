@@ -3,6 +3,9 @@
 FROM node:22-alpine AS build
 WORKDIR /app
 
+ARG NEXT_PUBLIC_SITE_URL=https://example.com
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+
 COPY package.json package-lock.json ./
 RUN npm ci
 

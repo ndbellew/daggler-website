@@ -8,6 +8,8 @@ services:
     image: daggler-website-frontend:local
     environment:
       SITE_ADDRESS: "${SITE_ADDRESS:-http://}"
+      WWW_SITE_ADDRESS: "${WWW_SITE_ADDRESS:-http://www.localhost}"
+      PRIMARY_SITE_URL: "${PRIMARY_SITE_URL:-http://localhost:8080}"
       BACKEND_UPSTREAM: "${BACKEND_UPSTREAM:-backend:3000}"
     ports:
       - "${HTTP_PORT:-8080}:80"
