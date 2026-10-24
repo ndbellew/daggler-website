@@ -1,0 +1,143 @@
+name: Deploy production
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  publish-and-deploy:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: "https://${{ vars.SITE_ADDRESS }}"
+    env:
+      IMAGE_REPOSITORY: ghcr.io/ndbellew/daggler-website
+      IMAGE_TAG: "${{ github.event.workflow_run.head_sha }}"
+      SITE_ADDRESS: "${{ vars.SITE_ADDRESS }}"
+    steps:
+      - name: Validate production configuration
+        env:
+          DEPLOY_HOST: "${{ secrets.DEPLOY_HOST }}"
+          DEPLOY_USER: "${{ secrets.DEPLOY_USER }}"
+          DEPLOY_SSH_KEY: "${{ secrets.DEPLOY_SSH_KEY }}"
+          DEPLOY_KNOWN_HOSTS: "${{ secrets.DEPLOY_KNOWN_HOSTS }}"
+        run: |
+          set -eu
+          test -n "$SITE_ADDRESS"
+          printf '%s' "$SITE_ADDRESS" | grep -Eq '^[A-Za-z0-9.-]+$'
+          test -n "$DEPLOY_HOST"
+          test -n "$DEPLOY_USER"
+          test -n "$DEPLOY_SSH_KEY"
+          test -n "$DEPLOY_KNOWN_HOSTS"
+
+      - name: Checkout verified commit
+        uses: actions/checkout@v4
+        with:
+          ref: "${{ github.event.workflow_run.head_sha }}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Authenticate to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: "${{ github.repository_owner }}"
+          password: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Build and publish production image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: "${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TAG }}"
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=https://${{ env.SITE_ADDRESS }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Configure strict SSH verification
+        env:
+          DEPLOY_SSH_KEY: "${{ secrets.DEPLOY_SSH_KEY }}"
+          DEPLOY_KNOWN_HOSTS: "${{ secrets.DEPLOY_KNOWN_HOSTS }}"
+        run: |
+          set -eu
+          install -d -m 0700 "$HOME/.ssh"
+          printf '%s\n' "$DEPLOY_SSH_KEY" > "$HOME/.ssh/deploy_key"
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 0600 "$HOME/.ssh/deploy_key" "$HOME/.ssh/known_hosts"
+          ssh-keygen -y -f "$HOME/.ssh/deploy_key" > /dev/null
+
+      - name: Prepare immutable deployment files
+        run: |
+          set -eu
+          umask 077
+          {
+            printf 'IMAGE_TAG=%s\n' "$IMAGE_TAG"
+            printf 'SITE_ADDRESS=%s\n' "$SITE_ADDRESS"
+            printf 'WWW_SITE_ADDRESS=www.%s\n' "$SITE_ADDRESS"
+            printf 'PRIMARY_SITE_URL=https://%s\n' "$SITE_ADDRESS"
+            printf 'BACKEND_UPSTREAM=backend:3000\n'
+          } > production.env
+
+      - name: Upload production configuration
+        env:
+          DEPLOY_HOST: "${{ secrets.DEPLOY_HOST }}"
+          DEPLOY_USER: "${{ secrets.DEPLOY_USER }}"
+        run: |
+          set -eu
+          ssh \
+            -i "$HOME/.ssh/deploy_key" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "install -d -m 0700 /tmp/daggler-website-$GITHUB_RUN_ID"
+          scp \
+            -i "$HOME/.ssh/deploy_key" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            compose.production.yaml production.env \
+            "$DEPLOY_USER@$DEPLOY_HOST:/tmp/daggler-website-$GITHUB_RUN_ID/"
+
+      - name: Deploy and verify container health
+        env:
+          DEPLOY_HOST: "${{ secrets.DEPLOY_HOST }}"
+          DEPLOY_USER: "${{ secrets.DEPLOY_USER }}"
+        run: |
+          set -eu
+          ssh \
+            -i "$HOME/.ssh/deploy_key" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "set -eu
+             sudo install -d -m 0755 /opt/daggler-website
+             sudo install -m 0644 /tmp/daggler-website-$GITHUB_RUN_ID/compose.production.yaml /opt/daggler-website/compose.production.yaml
+             sudo install -m 0600 /tmp/daggler-website-$GITHUB_RUN_ID/production.env /opt/daggler-website/.env
+             rm -rf /tmp/daggler-website-$GITHUB_RUN_ID
+             sudo docker compose --env-file /opt/daggler-website/.env -f /opt/daggler-website/compose.production.yaml pull frontend
+             sudo docker compose --env-file /opt/daggler-website/.env -f /opt/daggler-website/compose.production.yaml up --detach --no-build --wait --wait-timeout 180 frontend
+             container_id=\$(sudo docker compose --env-file /opt/daggler-website/.env -f /opt/daggler-website/compose.production.yaml ps --quiet frontend)
+             test -n \"\$container_id\"
+             test \"\$(sudo docker inspect --format='{{.State.Health.Status}}' \"\$container_id\")\" = healthy"

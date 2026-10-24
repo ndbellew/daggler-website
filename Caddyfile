@@ -7,6 +7,10 @@ http://127.0.0.1:2019 {
 	respond /healthz "ok" 200
 }
 
+{$WWW_SITE_ADDRESS:http://www.localhost} {
+	redir {$PRIMARY_SITE_URL:http://localhost:8080}{uri} permanent
+}
+
 {$SITE_ADDRESS:http://} {
 	encode zstd gzip
 
