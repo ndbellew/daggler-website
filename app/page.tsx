@@ -5,8 +5,8 @@ import { getAllContent } from "@/lib/content";
 import { siteConfig } from "@/site.config";
 
 export default function HomePage() {
-  const projects = getAllContent("projects").filter((item) => item.featured).slice(0, 2);
-  const writing = getAllContent("writing").slice(0, 2);
+  const projects = getAllContent("projects").filter((item) => item.featured).slice(0, 5);
+  const writing = getAllContent("writing").filter((item) => item.featured).slice(0, 2);
   return (
     <>
       <section className="relative overflow-hidden border-b border-line">
@@ -35,7 +35,7 @@ export default function HomePage() {
 
       <section className="border-y border-line bg-panel/50"><div className="shell py-20 sm:py-28"><div className="mb-10 flex items-end justify-between"><div><p className="eyebrow">Selected work</p><h2 className="section-title mt-4">Featured projects</h2></div><Link className="hidden text-sm text-muted hover:text-accent sm:block" href="/projects/">All projects →</Link></div><div className="grid gap-5 md:grid-cols-2">{projects.map((entry) => <ContentCard key={entry.slug} entry={entry} kind="projects" />)}</div></div></section>
 
-      <section className="shell py-20 sm:py-28"><div className="mb-10 flex items-end justify-between"><div><p className="eyebrow">Field notes</p><h2 className="section-title mt-4">Recent writing</h2></div><Link className="hidden text-sm text-muted hover:text-accent sm:block" href="/writing/">All writing →</Link></div><div className="grid gap-5 md:grid-cols-2">{writing.map((entry) => <ContentCard key={entry.slug} entry={entry} kind="writing" />)}</div></section>
+      <section className="shell py-20 sm:py-28"><div className="mb-10 flex items-end justify-between"><div><p className="eyebrow">Papers and writing</p><h2 className="section-title mt-4">Selected documents</h2></div><Link className="hidden text-sm text-muted hover:text-accent sm:block" href="/writing/">All writing →</Link></div><div className="grid gap-5 md:grid-cols-2">{writing.map((entry) => <ContentCard key={entry.slug} entry={entry} kind="writing" />)}</div></section>
 
       <section className="shell pb-20 sm:pb-28"><div className="rounded-3xl border border-line bg-ink p-8 text-surface sm:p-12 dark:bg-panel dark:text-ink"><p className="font-mono text-xs uppercase tracking-[.2em] text-accent">Start a conversation</p><div className="mt-5 flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between"><h2 className="max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">Have a complex engineering problem worth unpacking?</h2><Link className="shrink-0 rounded-lg bg-surface px-5 py-3 text-sm font-medium text-ink dark:bg-ink dark:text-surface" href="/contact/">Get in touch</Link></div></div></section>
     </>

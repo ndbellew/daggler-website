@@ -2,7 +2,7 @@
 
 A static, content-driven engineering portfolio built with Next.js App Router, TypeScript, Tailwind CSS, and MDX. Phase 1 includes a landing page, project case studies, technical writing, a web/print resume, about and contact pages, SEO metadata, sitemap, robots rules, tests, production Docker packaging, and gated RamNode deployment through GHCR.
 
-Identity and résumé content are sourced from Nathan Bellew's provided 2026 résumé. Project case studies and writing entries remain clearly labeled sample content and must be replaced before publishing.
+Identity and résumé content are sourced from Nathan Bellew's provided 2026 résumé. Project case studies cover manually approved, owner-created repositories, and the Writing section presents supplied technical documents with their original PDFs.
 
 ## Quick start
 
@@ -16,7 +16,7 @@ Open <http://localhost:3000>.
 ## Customize
 
 1. Keep identity and résumé details synchronized between `site.config.ts`, `app/resume/page.tsx`, and `public/resume.pdf`.
-2. Replace the sample MDX files in `content/projects` and `content/writing`.
+2. Maintain approved project case studies in `content/projects` and PDF-backed publication pages in `content/writing`.
 3. Replace the abstract social image in `public/og.svg` if desired.
 4. Review metadata and deployment settings before publishing.
 
@@ -56,4 +56,4 @@ The résumé page provides **View PDF**, **Download résumé**, and **Print / sa
 
 ## License
 
-Code is available under the [MIT License](LICENSE). Sample project and writing content should be replaced before publication.
+Code is available under the [MIT License](LICENSE). Papers and other documents retain their original claims, citations, and attribution.

@@ -1,0 +1,80 @@
+---
+title: World-Generator
+description: A C++20 and SDL3 procedural-terrain learning project with seeded mountain generation and an interactive map viewer.
+date: 2026-10-19
+year: 2026
+status: Prototype
+tags: [C++20, SDL3, Procedural Generation]
+featured: true
+placeholder: false
+repository: https://github.com/ndbellew/World-Generator
+---
+
+## Why I built it
+
+I built World-Generator as a hands-on procedural-generation learning project. The current prototype explores terrain generation in C++20, renders the result with SDL3, and provides an interactive camera for navigating the generated map.
+
+## Implemented behavior
+
+The application currently creates a `2048 × 1024` grid of cells and generates terrain from a fixed random seed. Its terrain pass places 15 mountains at pseudorandom positions. Each mountain combines two Gaussian elevation contributions: one for the peak and one for the surrounding highlands. Overlapping contributions accumulate in each cell.
+
+The SDL3 renderer converts elevation into four visual bands:
+
+- water at elevation `0` or below;
+- lowlands below `200`;
+- highlands below `600`;
+- mountains at `600` and above.
+
+The map opens in a resizable `1024 × 768` window. Current controls are:
+
+- drag with the left mouse button to pan;
+- use the mouse wheel to zoom toward the cursor;
+- press `R` to reset the camera;
+- press `Escape` or close the window to exit.
+
+Zoom is clamped between `0.1×` and `10×`. The cell model also contains temperature, rainfall, and water fields, although the current terrain generator and renderer operate on elevation.
+
+## Technology and architecture
+
+The project is a native C++20 application built with CMake 3.20 or newer and SDL3. The code separates responsibilities into:
+
+- `Cell`, which stores per-cell world values;
+- `Map`, which owns and initializes the two-dimensional cell grid;
+- `TerrainGenerator`, which performs seeded elevation generation;
+- `Camera2D`, which manages panning, zoom limits, cursor-centered zoom, and reset behavior;
+- `SDLRenderer`, which owns the SDL window, event loop, and elevation-based rendering.
+
+The executable links against the SDL3 CMake package. There is no backend, network service, persistence layer, release package, or browser build in the current repository.
+
+## Build and run
+
+Prerequisites supported by the repository are a C++20 compiler, CMake 3.20 or newer, and an SDL3 installation discoverable by CMake.
+
+The included script configures, builds, and launches the application:
+
+```bash
+./run.sh
+```
+
+The equivalent commands are:
+
+```bash
+cmake -S . -B cmake-build-debug
+cmake --build cmake-build-debug -j
+./cmake-build-debug/WorldGenerator
+```
+
+## Current limitations
+
+The renderer currently visits every cell on every frame. Viewport-culling logic is present only as commented code, so it does not reduce work outside the visible area. The repository's latest development note records severe generation and interaction lag on maps larger than roughly `1024 × 1024`; the current hard-coded map is larger than that threshold.
+
+Terrain is limited to the current mountain/elevation pass, uses a fixed seed in `main.cpp`, and is not configurable through a UI or command-line options. The repository has no automated tests and its README is currently empty, so source code and build configuration remain the authoritative usage documentation.
+
+## Future direction
+
+Planned work is focused on two areas:
+
+1. optimize large-map generation and rendering, including avoiding unnecessary per-frame work;
+2. improve the visual quality of generated terrain and mountains.
+
+These are future goals, not currently implemented features.

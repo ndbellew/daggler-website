@@ -1,0 +1,84 @@
+---
+title: Daggler Website
+description: A statically exported Next.js engineering portfolio with file-based MDX content, a Caddy runtime, container packaging, and gated production delivery.
+date: 2026-10-25
+year: 2026
+status: In development
+tags: [Next.js, TypeScript, Caddy]
+featured: true
+placeholder: false
+repository: https://github.com/ndbellew/daggler-website
+---
+
+## Purpose
+
+Daggler Website is the source repository for this engineering portfolio. It presents a professional profile, résumé, selected projects, and technical writing while keeping the published site static and operationally small.
+
+The repository is designed so identity and résumé details have an explicit source, while project and writing pages remain reviewable files in version control rather than records in a database.
+
+## Implemented site features
+
+The current application includes:
+
+- a responsive landing page with manually selected featured work;
+- project and writing archives backed by local MDX files;
+- statically generated detail routes for every project and article;
+- an About page and direct email/LinkedIn contact options;
+- a web résumé based on the supplied authoritative PDF;
+- view, download, and browser-print résumé actions;
+- light and dark themes with reduced-motion support;
+- metadata, canonical URLs, Open Graph fields, a sitemap, and robots rules;
+- keyboard navigation, visible focus styles, semantic headings, and a skip link;
+- generated custom not-found content.
+
+The site does not load external fonts, collect form submissions, run analytics, or use cookies.
+
+## Content architecture
+
+The application uses the Next.js App Router, React Server Components by default, and TypeScript. Tailwind CSS provides the design system and responsive styling.
+
+Project pages live in `content/projects/*.mdx`, and writing lives in `content/writing/*.mdx`. A server-only content module reads those files during the build, parses and validates the intentionally small frontmatter schema, sorts entries by date, and exposes the same metadata to cards, archives, static-route generation, and page metadata.
+
+Dynamic project and writing routes use `generateStaticParams`, allowing `next build` to export every route as static HTML. Images are configured for static-export compatibility, and trailing-slash routes map cleanly to directory-based files.
+
+## Runtime and deployment design
+
+A multi-stage Dockerfile builds the static export with Node.js and copies only the generated site into a pinned Caddy runtime image. Caddy provides compression, immutable asset caching, direct navigation to exported routes, a custom error page, health checks, automatic HTTPS support, and a reserved `/api/*` proxy for a possible future backend.
+
+Local Docker Compose builds the frontend and maps development-friendly HTTP and HTTPS ports. A separate production Compose model pulls an immutable image rather than building on the host, publishes standard web ports, persists Caddy certificate state, and retains a restricted container configuration.
+
+GitHub Actions keeps verification separate from production delivery. CI runs linting, TypeScript checks, unit tests, the static build, Compose validation, a container build, health waiting, and representative route requests. After a successful `main` CI run, a separate protected workflow is configured to publish a commit-SHA-tagged image to GitHub Container Registry and perform a serialized deployment with strict SSH host verification. The repository contains only secret references, never credential values or server access details.
+
+## Local setup
+
+The supported Node.js workflow is:
+
+```bash
+npm install
+npm run dev
+```
+
+The existing verification commands are:
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+The containerized local workflow is:
+
+```bash
+docker compose up --build
+```
+
+## Current limitations
+
+The site is intentionally static. It has no backend application, database, authentication system, or browser-based administration interface. Content changes currently require editing repository files and rebuilding the export.
+
+Project and article selection is manual. A repository appearing under a GitHub account is not treated as proof of authorship, and there is no automatic import or summary generation. Production delivery is configured in source, but successful operation still depends on external hosting, DNS, repository environment configuration, and credentials that are not part of this codebase.
+
+## Documented future idea
+
+A later phase may add a separate **Recently worked on** section containing the five most recently updated eligible GitHub projects, with summaries grounded in each repository's README. That idea is documented only. GitHub synchronization, generated summaries, an admin interface, a backend, and a database are not implemented in this phase.
