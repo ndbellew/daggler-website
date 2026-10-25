@@ -43,7 +43,8 @@ jobs:
           docker compose up --detach --wait --wait-timeout 60 frontend
           curl --fail --silent --show-error http://127.0.0.1:8080/ > /dev/null
           curl --fail --silent --show-error http://127.0.0.1:8080/about/ > /dev/null
-          curl --fail --silent --show-error http://127.0.0.1:8080/projects/resilient-service-platform/ > /dev/null
+          curl --fail --silent --show-error http://127.0.0.1:8080/projects/daggler-website/ > /dev/null
+          curl --fail --silent --show-error http://127.0.0.1:8080/health
       - name: Stop production container
         if: always()
         run: docker compose down --volumes
