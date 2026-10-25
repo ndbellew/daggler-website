@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, GithubIcon, LinkedinIcon } from "@/components/icons";
+import { ArrowUpRight, LinkedinIcon } from "@/components/icons";
 import { ContentCard } from "@/components/content-card";
 import { getAllContent } from "@/lib/content";
 import { siteConfig } from "@/site.config";
@@ -12,15 +12,14 @@ export default function HomePage() {
       <section className="relative overflow-hidden border-b border-line">
         <div className="grid-field absolute inset-0" aria-hidden="true" />
         <div className="shell relative py-20 sm:py-32">
-          <div className="mb-10 inline-flex items-center gap-2 rounded-full border border-line bg-panel/80 px-3 py-1.5 font-mono text-xs text-muted"><span className="h-1.5 w-1.5 rounded-full bg-accent" /> PLACEHOLDER PROFILE</div>
+          <div className="mb-10 inline-flex items-center gap-2 rounded-full border border-line bg-panel/80 px-3 py-1.5 font-mono text-xs text-muted"><span className="h-1.5 w-1.5 rounded-full bg-accent" /> 7+ YEARS IN PRODUCTION SOFTWARE</div>
           <div className="max-w-4xl">
-            <p className="eyebrow">Software · AI · Security · Systems</p>
-            <h1 className="mt-6 text-5xl font-semibold leading-[1.02] tracking-[-0.055em] sm:text-7xl lg:text-8xl">Engineering systems that remain <span className="text-accent">useful under pressure.</span></h1>
-            <p className="mt-8 max-w-2xl text-lg leading-8 text-muted sm:text-xl">{siteConfig.description} Replace this summary with a concise, evidence-based introduction.</p>
+            <p className="eyebrow">Backend · Distributed Systems · Cloud · Security</p>
+            <h1 className="mt-6 text-5xl font-semibold leading-[1.02] tracking-[-0.055em] sm:text-7xl lg:text-8xl">Senior Software Engineer building <span className="text-accent">production systems.</span></h1>
+            <p className="mt-8 max-w-2xl text-lg leading-8 text-muted sm:text-xl">{siteConfig.description}</p>
             <div className="mt-10 flex flex-wrap gap-3">
               <Link href="/projects/" className="button-primary">Explore projects <ArrowUpRight className="h-4 w-4" /></Link>
-              <Link href="/resume/" className="button-secondary">View resume</Link>
-              <a href={siteConfig.social.github} className="icon-button" aria-label="GitHub"><GithubIcon className="h-4 w-4" /></a>
+              <Link href="/resume/" className="button-secondary">View résumé</Link>
               <a href={siteConfig.social.linkedin} className="icon-button" aria-label="LinkedIn"><LinkedinIcon className="h-4 w-4" /></a>
             </div>
           </div>
@@ -28,7 +27,7 @@ export default function HomePage() {
       </section>
 
       <section className="shell py-20 sm:py-28">
-        <div className="mb-12 max-w-xl"><p className="eyebrow">Capabilities</p><h2 className="section-title mt-4">Across the engineering stack</h2><p className="mt-4 text-muted">Representative specialty descriptions—replace them with your actual strengths and evidence.</p></div>
+        <div className="mb-12 max-w-xl"><p className="eyebrow">Capabilities</p><h2 className="section-title mt-4">Across the engineering stack</h2><p className="mt-4 text-muted">Experience spanning architecture, implementation, deployment, production troubleshooting, and long-term support.</p></div>
         <div className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2">
           {siteConfig.specialties.map((item) => <article key={item.code} className="bg-panel p-6 sm:p-8"><span className="font-mono text-xs text-accent">/{item.code}</span><h3 className="mt-8 text-lg font-semibold">{item.name}</h3><p className="mt-3 text-sm leading-6 text-muted">{item.description}</p></article>)}
         </div>
