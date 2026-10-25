@@ -132,12 +132,12 @@ jobs:
             -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
             "$DEPLOY_USER@$DEPLOY_HOST" \
             "set -eu
-             sudo install -d -m 0755 /opt/daggler-website
-             sudo install -m 0644 /tmp/daggler-website-$GITHUB_RUN_ID/compose.production.yaml /opt/daggler-website/compose.production.yaml
-             sudo install -m 0600 /tmp/daggler-website-$GITHUB_RUN_ID/production.env /opt/daggler-website/.env
+             install -d -m 0755 /opt/daggler-website
+             install -m 0644 /tmp/daggler-website-$GITHUB_RUN_ID/compose.production.yaml /opt/daggler-website/compose.production.yaml
+             install -m 0600 /tmp/daggler-website-$GITHUB_RUN_ID/production.env /opt/daggler-website/.env
              rm -rf /tmp/daggler-website-$GITHUB_RUN_ID
-             sudo docker compose --env-file /opt/daggler-website/.env -f /opt/daggler-website/compose.production.yaml pull frontend
-             sudo docker compose --env-file /opt/daggler-website/.env -f /opt/daggler-website/compose.production.yaml up --detach --no-build --wait --wait-timeout 180 frontend
-             container_id=\$(sudo docker compose --env-file /opt/daggler-website/.env -f /opt/daggler-website/compose.production.yaml ps --quiet frontend)
+             docker compose --env-file /opt/daggler-website/.env -f /opt/daggler-website/compose.production.yaml pull frontend
+             docker compose --env-file /opt/daggler-website/.env -f /opt/daggler-website/compose.production.yaml up --detach --no-build --wait --wait-timeout 180 frontend
+             container_id=\$(docker compose --env-file /opt/daggler-website/.env -f /opt/daggler-website/compose.production.yaml ps --quiet frontend)
              test -n \"\$container_id\"
-             test \"\$(sudo docker inspect --format='{{.State.Health.Status}}' \"\$container_id\")\" = healthy"
+             test \"\$(docker inspect --format='{{.State.Health.Status}}' \"\$container_id\")\" = healthy"
