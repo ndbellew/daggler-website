@@ -2,7 +2,7 @@
 
 A static, content-driven engineering portfolio built with Next.js App Router, TypeScript, Tailwind CSS, and MDX. Phase 1 includes a landing page, project case studies, technical writing, a web/print resume, about and contact pages, SEO metadata, sitemap, robots rules, tests, production Docker packaging, and gated RamNode deployment through GHCR.
 
-All shipped biography, resume, project, and publication copy is explicitly placeholder content. Replace it before publishing.
+Identity and résumé content are sourced from Nathan Bellew's provided 2026 résumé. Project case studies cover manually approved, owner-created repositories, and the Writing section presents supplied technical documents with their original PDFs.
 
 ## Quick start
 
@@ -15,11 +15,10 @@ Open <http://localhost:3000>.
 
 ## Customize
 
-1. Update identity, social links, contact details, and site URL in `site.config.ts`.
-2. Replace placeholder resume entries in `app/resume/page.tsx`.
-3. Replace the sample MDX files in `content/projects` and `content/writing`.
-4. Replace the abstract social image in `public/og.svg` if desired.
-5. Review metadata and deployment settings before publishing.
+1. Keep identity and résumé details synchronized between `site.config.ts`, `app/resume/page.tsx`, and `public/resume.pdf`.
+2. Maintain approved project case studies in `content/projects` and PDF-backed publication pages in `content/writing`.
+3. Replace the abstract social image in `public/og.svg` if desired.
+4. Review metadata and deployment settings before publishing.
 
 MDX frontmatter schemas and authoring conventions are documented in [docs/content.md](docs/content.md). Deployment instructions are in [docs/deployment.md](docs/deployment.md).
 
@@ -53,8 +52,8 @@ See [docs/deployment.md](docs/deployment.md) for local Docker commands, producti
 
 ## Resume PDF
 
-The resume page includes a **Print / save PDF** action using the browser print dialog. This guarantees the PDF reflects the current web resume without checking a generated binary into source control. Print styles remove navigation and controls. If a hand-authored PDF is preferred later, add it to `public/` and update the resume action.
+The résumé page provides **View PDF**, **Download résumé**, and **Print / save PDF** actions. `public/resume.pdf` is the authoritative supplied document; the web résumé mirrors its professional content while intentionally omitting the phone number. Print styles remove navigation and controls.
 
 ## License
 
-Code is available under the [MIT License](LICENSE). Portfolio content remains placeholder material and should be replaced before use.
+Code is available under the [MIT License](LICENSE). Papers and other documents retain their original claims, citations, and attribution.

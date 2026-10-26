@@ -3,6 +3,11 @@ import type { ContentMeta } from "@/lib/content";
 import { ArrowUpRight } from "@/components/icons";
 
 export function ContentCard({ entry, kind }: { entry: ContentMeta; kind: "projects" | "writing" }) {
+  const label = kind === "writing"
+    ? entry.documentType ?? "Writing"
+    : entry.placeholder ? "SAMPLE" : entry.status ?? "PROJECT";
+  const displayYear = entry.year ?? entry.date?.slice(0, 4);
+
   return (
     <article className="card group relative flex h-full flex-col p-6">
       <div className="mb-8 flex items-start justify-between gap-4">
@@ -14,8 +19,8 @@ export function ContentCard({ entry, kind }: { entry: ContentMeta; kind: "projec
       <h3 className="text-xl font-semibold tracking-tight"><Link className="after:absolute after:inset-0" href={`/${kind}/${entry.slug}/`}>{entry.title}</Link></h3>
       <p className="mt-3 flex-1 text-sm leading-6 text-muted">{entry.description}</p>
       <div className="mt-6 flex items-center justify-between border-t border-line pt-4 font-mono text-xs text-muted">
-        <span>{entry.placeholder ? "SAMPLE" : entry.status ?? "PUBLISHED"}</span>
-        <span>{entry.year ?? entry.date.slice(0, 4)}</span>
+        <span>{label}</span>
+        {displayYear && <span>{displayYear}</span>}
       </div>
     </article>
   );

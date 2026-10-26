@@ -9,12 +9,17 @@ export type ContentMeta = {
   slug: string;
   title: string;
   description: string;
-  date: string;
+  date?: string;
   tags: string[];
   featured: boolean;
   placeholder: boolean;
   year?: string;
   status?: string;
+  repository?: string;
+  demo?: string;
+  author?: string;
+  documentType?: string;
+  pdf?: string;
 };
 
 export type ContentEntry = ContentMeta & { source: string };
@@ -42,6 +47,30 @@ function parseValue(raw: string): unknown {
   return value.replace(/^['\"]|['\"]$/g, "");
 }
 
+function optionalUrl(value: unknown, field: string, file: string): string | undefined {
+  if (value === undefined) return undefined;
+  const url = assertString(value, field, file);
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new Error(`${file}: frontmatter field "${field}" must be an absolute URL`);
+  }
+  if (parsed.protocol !== "https:") {
+    throw new Error(`${file}: frontmatter field "${field}" must use HTTPS`);
+  }
+  return url;
+}
+
+function optionalPdfPath(value: unknown, file: string): string | undefined {
+  if (value === undefined) return undefined;
+  const pdfPath = assertString(value, "pdf", file);
+  if (!pdfPath.startsWith("/") || !pdfPath.toLowerCase().endsWith(".pdf") || pdfPath.includes("..")) {
+    throw new Error(`${file}: frontmatter field "pdf" must be a root-relative PDF path`);
+  }
+  return pdfPath;
+}
+
 export function parseFrontmatter(fileContents: string, file = "content"): {
   data: Record<string, unknown>;
   source: string;
@@ -60,14 +89,15 @@ export function parseFrontmatter(fileContents: string, file = "content"): {
   return { data, source: fileContents.slice(match[0].length).trim() };
 }
 
-function toEntry(slug: string, raw: string, file: string): ContentEntry {
+function toEntry(kind: ContentKind, slug: string, raw: string, file: string): ContentEntry {
   const { data, source } = parseFrontmatter(raw, file);
   const tags = data.tags;
   if (!Array.isArray(tags) || !tags.every((tag) => typeof tag === "string")) {
     throw new Error(`${file}: frontmatter field "tags" must be a string array`);
   }
-  const date = assertString(data.date, "date", file);
-  if (Number.isNaN(Date.parse(date))) throw new Error(`${file}: date must be valid ISO date text`);
+  const date = data.date === undefined ? undefined : assertString(data.date, "date", file);
+  if (date && Number.isNaN(Date.parse(date))) throw new Error(`${file}: date must be valid ISO date text`);
+  if (kind === "projects" && !date) throw new Error(`${file}: project content requires a date`);
 
   return {
     slug,
@@ -79,6 +109,11 @@ function toEntry(slug: string, raw: string, file: string): ContentEntry {
     placeholder: data.placeholder === true,
     year: typeof data.year === "string" ? data.year : undefined,
     status: typeof data.status === "string" ? data.status : undefined,
+    repository: optionalUrl(data.repository, "repository", file),
+    demo: optionalUrl(data.demo, "demo", file),
+    author: typeof data.author === "string" ? data.author : undefined,
+    documentType: typeof data.documentType === "string" ? data.documentType : undefined,
+    pdf: optionalPdfPath(data.pdf, file),
     source,
   };
 }
@@ -91,9 +126,14 @@ export function getAllContent(kind: ContentKind): ContentEntry[] {
     .filter((file) => file.endsWith(".mdx"))
     .map((file) => {
       const fullPath = path.join(directory, file);
-      return toEntry(file.replace(/\.mdx$/, ""), fs.readFileSync(fullPath, "utf8"), fullPath);
+      return toEntry(kind, file.replace(/\.mdx$/, ""), fs.readFileSync(fullPath, "utf8"), fullPath);
     })
-    .sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+    .sort((a, b) => {
+      if (a.date && b.date) return Date.parse(b.date) - Date.parse(a.date);
+      if (a.date) return -1;
+      if (b.date) return 1;
+      return a.title.localeCompare(b.title);
+    });
 }
 
 export function getContent(kind: ContentKind, slug: string): ContentEntry | undefined {
